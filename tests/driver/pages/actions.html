@@ -1,0 +1,140 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>actions</title>
+<style>
+  body { margin: 0; font: 14px sans-serif; }
+  #log { position: fixed; right: 0; top: 0; }
+  #covered { position: absolute; left: 700px; top: 40px; width: 160px; height: 40px; }
+  /* Exactly over #covered and nothing else, so the refusal is about that
+     button rather than about half the page. */
+  #cover   { position: absolute; left: 700px; top: 40px; width: 160px; height: 40px; background: rgba(0,0,0,.1); }
+  /* Visible, laid out, and transparent to the mouse. A press at its centre
+     falls through to the page, so the hit test has to refuse rather than
+     report a click nothing received (§8.31). */
+  #ghost   { pointer-events: none; }
+  #sliding { position: absolute; left: 20px; top: 260px; width: 120px; height: 30px; background: #cde; }
+  /* `left`, not `transform`: a layout property, so the box model moves with
+     it and there is no doubt about what is being measured. */
+  #sliding.go { animation: slide 0.6s linear forwards; }
+  @keyframes slide { from { left: 20px; } to { left: 320px; } }
+  /* §8.7's named case: the dialog animates, the button inside
+     it does not, and the button moves anyway. */
+  #dialog { position: absolute; left: 20px; top: 340px; width: 200px; height: 60px; background: #efe; }
+  #dialog.go { animation: slide 0.6s linear forwards; }
+  /* Never settles: `_settle` samples the box twenty times and gives up, which
+     is the "is still moving" refusal. Infinite, so no timing hope makes the
+     test pass by accident. */
+  #forever { position: absolute; left: 20px; top: 420px; width: 100px; height: 30px; background: #fcd;
+             animation: slide 0.6s linear infinite; }
+  #tall { height: 2200px; }
+  #below { background: #fca; }
+  .drop { width: 200px; height: 80px; background: #eee; }
+  #drag { width: 100px; height: 40px; background: #ade; }
+</style>
+
+<button id="plain">Plain</button>
+<button id="disabled" disabled>Disabled</button>
+<button id="covered">Covered</button>
+<div id="cover"></div>
+<button id="ghost">Ghost</button>
+
+<label id="wrap">Wrapped <input id="inside-label"></label>
+
+<div id="sliding">sliding</div>
+<div id="dialog"><button id="in-dialog">Inside</button></div>
+
+<input id="text" value="old value">
+<textarea id="area">old text</textarea>
+<input id="date" type="date">
+<input id="time" type="time">
+<input id="week" type="week">
+<input id="month" type="month">
+<input id="colour" type="color">
+<input id="slider" type="range" min="0" max="100" step="5" value="50">
+
+<div id="forever">forever</div>
+<button id="gone" style="display: none">Gone</button>
+<button id="see-through" style="visibility: hidden">See through</button>
+<button class="twin">Twin</button>
+<button class="twin">Twin</button>
+
+<select id="fruit">
+  <option value="a">Apple</option>
+  <option value="b">Banana</option>
+  <!-- Disabled on purpose: arrow keys **skip** it, so counting positions by
+       DOM order lands one short. Measured, §8.16. -->
+  <option value="c" disabled>Cherry</option>
+  <option value="d">Damson</option>
+</select>
+<!-- The first option disabled, because Chrome starts on the first *enabled*
+     one and `Home` goes there too, not to index zero. -->
+<select id="lead">
+  <option value="z" disabled>Choose one</option>
+  <option value="one">One</option>
+  <option value="two">Two</option>
+</select>
+<select id="grouped">
+  <optgroup label="Fruit"><option value="x">Xigua</option><option value="y">Yuzu</option></optgroup>
+  <optgroup label="Veg"><option value="v">Zucchini</option></optgroup>
+</select>
+<select id="bare">
+  <option>Plain</option>
+  <option>Second</option>
+</select>
+<!-- A list box, not a dropdown. Ctrl+ArrowDown moves without selecting and
+     Ctrl+Space toggles, and both skip the disabled option the same way the
+     plain arrows do -- measured, §8.16. -->
+<select id="many" multiple size="6">
+  <option value="p">Pea</option>
+  <option value="q">Quince</option>
+  <option value="r" disabled>Radish</option>
+  <option value="s">Sage</option>
+  <option value="t">Thyme</option>
+</select>
+
+<input id="file" type="file">
+<input id="files" type="file" multiple>
+
+<div id="drag" draggable="true">drag me</div>
+<div id="drop" class="drop">drop here</div>
+
+<div id="tall"></div>
+<button id="below">Below the fold</button>
+
+<script>
+  window.__log = [];
+  const log = (what) => window.__log.push(what);
+  document.getElementById('plain').addEventListener('click', () => log('plain'));
+  document.getElementById('covered').addEventListener('click', () => log('covered'));
+  document.getElementById('ghost').addEventListener('click', () => log('ghost'));
+  document.getElementById('below').addEventListener('click', () => log('below'));
+  document.getElementById('inside-label').addEventListener('click', () => log('inside-label'));
+  for (const id of ['text', 'area', 'date', 'time', 'week', 'slider']) {
+    document.getElementById(id).addEventListener('input', (e) => log(['input', id, e.target.value]));
+    document.getElementById(id).addEventListener('change', (e) => log(['change', id, e.target.value]));
+  }
+
+  const drop = document.getElementById('drop');
+  for (const name of ['dragenter', 'dragover', 'drop']) {
+    drop.addEventListener(name, (e) => { e.preventDefault(); if (name !== 'dragover') log(name); });
+  }
+  document.getElementById('drag').addEventListener('dragstart', (e) => {
+    e.dataTransfer.setData('text/plain', 'the payload');
+    log('dragstart');
+  });
+
+  window.__uncover = (ms) => setTimeout(() => document.getElementById('cover').remove(), ms);
+  document.getElementById('sliding').addEventListener('mouseenter', () => log('entered-sliding'));
+  document.getElementById('in-dialog').addEventListener('click', () => log('in-dialog'));
+  window.__slide = () => document.getElementById('sliding').classList.add('go');
+  window.__slideDialog = () => document.getElementById('dialog').classList.add('go');
+  for (const id of ['fruit', 'lead', 'grouped', 'bare']) {
+    document.getElementById(id).addEventListener('change', (e) => log(['change', id, e.target.value]));
+  }
+  for (const id of ['file', 'files']) {
+    document.getElementById(id).addEventListener('change', (e) => {
+      log(['files', id, [...e.target.files].map(f => f.name)]);
+    });
+  }
+  window.__reset = () => { window.__log = []; };
+</script>

@@ -1,0 +1,19 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>console</title>
+<h1>console</h1>
+<button id="log">log</button>
+<button id="boom">throw</button>
+<script>
+  // Deliberately varied argument types: consoleAPICalled carries them as
+  // RemoteObjects, and a driver that only handles strings drops the rest.
+  document.getElementById("log").addEventListener("click", () => {
+    console.log("hello from the page", 42, { nested: true });
+  });
+
+  // An uncaught throw inside a listener reaches Runtime.exceptionThrown, which
+  // is how a driver reports a page error that nothing in the test asked about.
+  document.getElementById("boom").addEventListener("click", () => {
+    throw new Error("uncaught from the page");
+  });
+</script>

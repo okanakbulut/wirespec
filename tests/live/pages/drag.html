@@ -1,0 +1,38 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>drag</title>
+<style>
+  body { margin: 0; font: 16px system-ui, sans-serif; }
+  #card { position: absolute; left: 30px; top: 30px; width: 120px; height: 60px;
+          background: #1d4ed8; color: white; display: grid; place-items: center; cursor: grab; }
+  #bin  { position: absolute; left: 300px; top: 30px; width: 180px; height: 120px;
+          border: 2px dashed #666; display: grid; place-items: center; }
+</style>
+<!-- draggable=true hands the gesture to the browser's own drag session. Synthetic
+     mouse events never start one, which is why Input.setInterceptDrags exists:
+     Chrome hands back the drag it *would* have run, and the driver performs it. -->
+<div id="card" draggable="true" data-id="card-1">drag me</div>
+<div id="bin">drop here</div>
+<script>
+  window.__dropped = null;
+  const card = document.getElementById("card");
+  const bin = document.getElementById("bin");
+
+  card.addEventListener("dragstart", (event) => {
+    event.dataTransfer.setData("text/plain", card.dataset.id);
+    // A text/html item is the only kind Chrome attaches a baseURL to, and
+    // baseURL is the field whose wire spelling the camel rename gets wrong.
+    // Without an item like this on the page, nothing ever exercises it.
+    event.dataTransfer.setData("text/html", "<b>" + card.dataset.id + "</b>");
+    event.dataTransfer.effectAllowed = "move";
+  });
+
+  // dragover must preventDefault or the drop never fires -- a real page bug
+  // that a driver has to be able to reproduce.
+  bin.addEventListener("dragover", (event) => { event.preventDefault(); });
+  bin.addEventListener("drop", (event) => {
+    event.preventDefault();
+    window.__dropped = event.dataTransfer.getData("text/plain");
+    bin.textContent = "dropped: " + window.__dropped;
+  });
+</script>

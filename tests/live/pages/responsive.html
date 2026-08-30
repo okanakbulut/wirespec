@@ -1,0 +1,17 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- Without this meta tag, Emulation's mobile mode still lays the page out at
+     the 980px desktop fallback width, and every breakpoint assertion is about
+     a viewport the phone never had. -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>responsive</title>
+<style>
+  body { margin: 0; font: 16px system-ui, sans-serif; }
+  #layout::after { content: "desktop"; }
+  @media (max-width: 480px) { #layout::after { content: "phone"; } }
+</style>
+<h1>responsive</h1>
+<p id="layout">current layout: </p>
+<script>
+  window.__layout = () => getComputedStyle(document.getElementById("layout"), "::after").content;
+</script>

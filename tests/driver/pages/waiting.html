@@ -1,0 +1,49 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>waiting</title>
+<style>#by-stylesheet { display: none; }</style>
+<div id="host"></div>
+<div id="by-stylesheet">appears when a rule changes</div>
+<p id="vanishing">here for now</p>
+<p id="doomed">not for long</p>
+<div id="churn">steady</div>
+<script>
+  window.__appear = (after) => setTimeout(() => {
+    const el = document.createElement('p');
+    el.id = 'appeared';
+    el.textContent = 'here now';
+    document.getElementById('host').appendChild(el);
+  }, after);
+
+  // Still in the document afterwards, which is what tells `hidden` apart from
+  // `detached`.
+  window.__hide = (after) => setTimeout(() => {
+    document.getElementById('vanishing').style.display = 'none';
+  }, after);
+
+  window.__remove = (after) => setTimeout(() => {
+    document.getElementById('doomed').remove();
+  }, after);
+
+  // A framework re-rendering under the driver: the element is *replaced*
+  // rather than updated, so every node id resolved a moment ago is already
+  // gone. The text settles; the node the driver is holding does not.
+  window.__churn = (times, every) => {
+    let left = times;
+    const tick = () => {
+      const old = document.getElementById('churn');
+      const fresh = document.createElement('div');
+      fresh.id = 'churn';
+      fresh.textContent = left > 1 ? 'churning' : 'settled';
+      old.replaceWith(fresh);
+      if (--left > 0) setTimeout(tick, every);
+    };
+    setTimeout(tick, every);
+  };
+
+  // Nothing about this produces a DOM event: the rule is edited in the
+  // stylesheet itself, which is exactly why the poll interval stays.
+  window.__unhide = (after) => setTimeout(() => {
+    document.styleSheets[0].cssRules[0].style.display = 'block';
+  }, after);
+</script>

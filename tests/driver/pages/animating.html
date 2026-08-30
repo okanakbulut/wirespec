@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>animating</title>
+<style>
+  body { margin: 0; background: #111; overflow: hidden; }
+  /* CSS, not script: the screencast is damage-driven (§16.1), so
+     a page that is not repainting produces three frames and a test asserting
+     on more than that would be flaky by construction. This one repaints until
+     the tab goes away. */
+  .sweep {
+    height: 100vh;
+    background: linear-gradient(90deg, #1d4ed8 0%, #f59e0b 50%, #1d4ed8 100%);
+    background-size: 200% 100%;
+    animation: slide 0.6s linear infinite;
+  }
+  @keyframes slide { from { background-position: 0 0; } to { background-position: 200% 0; } }
+</style>
+<div class="sweep"></div>

@@ -1,0 +1,47 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>naming</title>
+
+<!--
+  One accessible name, arrived at every way a document can arrive at it.
+
+  The point of the page is the *collisions*: several elements share a name and
+  take it from different sources, which is the case a narrowing that only reads
+  attributes gets wrong. It finds one of them, so the empty-result fallback
+  never fires, and strict mode reports one match where there are four.
+-->
+
+<h2>Named "Field name"</h2>
+<input id="by-aria-label" aria-label="Field name">
+<label for="by-label-for">Field name</label><input id="by-label-for">
+<label>Field name <input id="by-wrapping-label"></label>
+<span id="ref-field-name">Field name</span><input id="by-labelledby" aria-labelledby="ref-field-name">
+
+<h2>Named "Save changes"</h2>
+<button id="b-contents">Save changes</button>
+<button id="b-aria" aria-label="Save changes">unrelated</button>
+<button id="b-nested-alt"><img alt="Save changes" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></button>
+<button id="b-title" title="Save changes"></button>
+<input id="b-value" type="submit" value="Save changes">
+<button id="b-svg"><svg width="12" height="12" viewBox="0 0 12 12"><title>Save changes</title><circle cx="6" cy="6" r="5"/></svg></button>
+<button id="b-deep"><span><em>Save</em> <em>changes</em></span></button>
+<span id="ref-save">Save changes</span><button id="b-labelledby" aria-labelledby="ref-save">unrelated</button>
+
+<h2>Named through two references at once</h2>
+<span id="ref-one">Contract</span><span id="ref-two">value</span>
+<input id="by-two-refs" aria-labelledby="ref-one ref-two">
+
+<h2>Placeholder and option labels</h2>
+<input id="by-placeholder" placeholder="Search matters">
+<select id="grouped">
+  <optgroup label="Recent matters"><option>One</option></optgroup>
+</select>
+
+<h2>An id that needs escaping</h2>
+<span id='odd"id\with'>Escaped label</span>
+<input id="by-odd-ref" aria-labelledby='odd"id\with'>
+
+<h2>Case and whitespace</h2>
+<button id="b-case" aria-label="MIXED Case Button"></button>
+<button id="b-wrapped">   Wrapped
+   across    lines   </button>

@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>opener</title>
+<h1>opener</h1>
+<button id="open">open a tab</button>
+<button id="open-network">open one that fetches</button>
+<a id="link" href="/list.html" target="_blank">open a link</a>
+<script>
+  document.getElementById('open').addEventListener('click', () => {
+    window.open('/index.html', '_blank');
+  });
+  // A button, not a bare `evaluate`: `window.open` without a user gesture is
+  // silently eaten by the popup blocker, so a test driving it from script
+  // would wait out its timeout for a tab that was never allowed to exist.
+  document.getElementById('open-network').addEventListener('click', () => {
+    window.open('/network.html', '_blank');
+  });
+</script>

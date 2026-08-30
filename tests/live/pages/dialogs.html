@@ -1,0 +1,24 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>dialogs</title>
+<h1>dialogs</h1>
+<button id="alert">alert</button>
+<button id="confirm">confirm</button>
+<button id="prompt">prompt</button>
+<p id="answer">nothing yet</p>
+<script>
+  // A dialog blocks the renderer: until it is handled, every command against
+  // this page waits. That is why a driver must subscribe to
+  // Page.javascriptDialogOpening rather than discovering it by timing out.
+  const answer = document.getElementById("answer");
+  document.getElementById("alert").addEventListener("click", () => {
+    alert("look at me");
+    answer.textContent = "alert dismissed";
+  });
+  document.getElementById("confirm").addEventListener("click", () => {
+    answer.textContent = confirm("really?") ? "confirmed" : "cancelled";
+  });
+  document.getElementById("prompt").addEventListener("click", () => {
+    answer.textContent = prompt("your name?", "default name");
+  });
+</script>

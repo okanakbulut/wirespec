@@ -1,0 +1,28 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>picker inputs</title>
+<style>input { display: block; margin: 4px; }</style>
+
+<input id="text" type="text">
+<input id="date" type="date">
+<input id="datetime-local" type="datetime-local">
+<input id="month" type="month">
+<input id="time" type="time">
+<input id="week" type="week">
+<input id="color" type="color">
+<input id="range" type="range" min="0" max="100" step="1" value="50">
+
+<script>
+  // Every event a controlled React input would be listening for. The point of
+  // §8.4 is that assigning .value does not raise these, so a fill
+  // path that does not raise them is a fill path React silently reverts.
+  window.__events = [];
+  for (const input of document.querySelectorAll('input')) {
+    for (const name of ['input', 'change']) {
+      input.addEventListener(name, (e) => {
+        window.__events.push([e.target.id, name, e.target.value]);
+      });
+    }
+  }
+  window.__reset = () => { window.__events = []; };
+</script>

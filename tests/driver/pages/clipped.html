@@ -1,0 +1,61 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>a control clipped by a scrollable ancestor</title>
+<style>
+  body { margin: 0; font: 13px system-ui, sans-serif; }
+
+  /* A side dock: a fixed-height column whose body scrolls. The pilot application's Inspector,
+     reduced to the two properties that matter -- the scroller is shorter than
+     its content, and the control this is about is past the bottom of it. */
+  aside { position: fixed; top: 0; right: 0; width: 520px; height: 650px;
+          display: flex; flex-direction: column; border-left: 1px solid #ccc; }
+  .scroller { flex: 1; overflow-y: auto; padding: 16px; }
+
+  /* Tall enough to push the group below the scroller's visible edge without
+     pushing it out of the *viewport*, which is the whole point: the element has
+     an ordinary on-screen bounding box and is still not reachable. */
+  .filler { height: 620px; }
+
+  label { display: flex; align-items: center; gap: 10px; padding: 10px;
+          border: 1px solid #ccc; }
+  button[role=radio] { width: 16px; height: 16px; border-radius: 50%;
+                       border: 1px solid #888; background: transparent; }
+  button[role=radio][data-state=checked] { border-color: #d60; }
+</style>
+
+<aside role="complementary">
+  <div class="scroller">
+    <div class="filler">Content above the group, so the group is scrolled out of the dock.</div>
+
+    <!-- Radix's radio as the pilot application renders it, copied from the live DOM rather
+         than imagined: a `<button role=radio>` carrying its own `aria-checked`
+         and `data-state`, wrapped in a `<label>`, inside a `role=radiogroup`. -->
+    <div role="radiogroup" aria-label="Serial scope" tabindex="0">
+      <label>
+        <button type="button" role="radio" aria-checked="true" data-state="checked"
+                value="per_matter_type" aria-label="Per matter type" tabindex="-1"></button>
+        <span>Per matter type</span>
+      </label>
+      <label>
+        <button type="button" role="radio" aria-checked="false" data-state="unchecked"
+                value="per_tenant" aria-label="Per tenant" tabindex="-1"></button>
+        <span>Per tenant</span>
+      </label>
+    </div>
+  </div>
+</aside>
+
+<script>
+  // An ordinary radio group. Nothing here is a trap: the point of this page is
+  // that the control is perfectly well behaved and never receives the click.
+  const group = document.querySelector('[role=radiogroup]');
+  group.addEventListener('click', (event) => {
+    const clicked = event.target.closest('button[role=radio]');
+    if (!clicked) return;
+    for (const radio of group.querySelectorAll('button[role=radio]')) {
+      const checked = radio === clicked;
+      radio.setAttribute('aria-checked', String(checked));
+      radio.setAttribute('data-state', checked ? 'checked' : 'unchecked');
+    }
+  });
+</script>

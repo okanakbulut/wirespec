@@ -1,0 +1,10 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>dialog on load</title>
+<h1>loaded anyway</h1>
+<script>
+  // Top level, so it runs before the load event does. Nothing has been clicked
+  // and no command is in flight: a `goto` against this page waits for a load
+  // that cannot happen until somebody answers the dialog.
+  alert("before the load event");
+</script>

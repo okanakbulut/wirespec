@@ -1,0 +1,34 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>frames</title>
+<h1>host document</h1>
+<!-- Same id and same text as the button inside every frame. A frame step that
+     leaks would find this one, and the test would pass for the wrong reason. -->
+<button id="press">Press me</button>
+<p id="said">host says nothing</p>
+
+<iframe id="widget" src="/inner.html" width="320" height="240"></iframe>
+<iframe id="second" src="/inner.html" width="320" height="240"></iframe>
+<iframe id="outer" src="/middle.html" width="340" height="260"></iframe>
+<div id="not-a-frame">a div, which has no document inside it</div>
+<button id="add">add a frame</button>
+
+<script>
+  // Cross-origin on purpose: same port, different host, which Chrome treats as
+  // a different site and puts in its own renderer process.
+  const stranger = document.createElement("iframe");
+  stranger.id = "stranger";
+  stranger.src = location.href.replace("127.0.0.1", "localhost").replace(/frames\.html$/, "inner.html");
+  stranger.width = 320;
+  stranger.height = 240;
+  document.body.appendChild(stranger);
+
+  document.getElementById("add").addEventListener("click", () => {
+    const late = document.createElement("iframe");
+    late.id = "late";
+    late.src = "/inner.html";
+    late.width = 320;
+    late.height = 240;
+    document.body.appendChild(late);
+  });
+</script>

@@ -1,0 +1,107 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>an unrelated element animating across a target</title>
+<style>
+  body { margin: 0; font: 13px system-ui, sans-serif; }
+
+  /* The target. Nothing about it moves, and nothing about it is unusual: the
+     whole point is that the element being acted on is perfectly still. */
+  #target { position: fixed; left: 300px; top: 300px; width: 120px; height: 40px; }
+  #result { position: fixed; left: 300px; top: 360px; }
+
+  /* The pilot application's floating dock pill, reduced to what matters: fixed, above
+     everything, and it moves horizontally by transitioning `right` -- so it
+     sweeps *through* the space between where it was and where it is going. It
+     is neither an ancestor nor a descendant of the target, which is why the
+     "is it moving" check never looks at it. */
+  #pill { position: fixed; top: 295px; width: 200px; height: 50px;
+          background: #d60; z-index: 500;
+          transition: right var(--sweep, 0.6s) linear; }
+
+  /* Right of the target, off its point. */
+  #pill.away { right: 700px; }
+  /* Squarely over the target's centre. */
+  #pill.over { right: 820px; }
+  /* Past it, and clear again -- so a sweep from `away` to `past` crosses the
+     target and *ends* somewhere the target is reachable. That is the honest
+     shape of the pilot application's pill, and the one where waiting is the right answer:
+     wait, and the click lands; do not, and it lands on whatever was passing. */
+  #pill.past { right: 960px; }
+
+  /* The other half of the rule: a mover the point is out of the reach of. On
+     screen, running for a long time, and never within `actionable._REACH` of
+     the target's centre on the x axis for any of it -- 1000px against the
+     target's 360, and travelling further away. Nothing a press at the target
+     can be affected by, so nothing to wait for. */
+  #far { position: fixed; top: 600px; left: 1000px; width: 200px; height: 60px;
+         background: #06c; transition: left var(--far, 1s) linear; }
+  #far.gone { left: 1050px; }
+</style>
+
+<button id="target">Per tenant</button>
+<output id="result">untouched</output>
+<div id="pill" class="away"></div>
+<div id="far"></div>
+
+<script>
+  const target = document.getElementById('target');
+  const result = document.getElementById('result');
+  const pill = document.getElementById('pill');
+
+  let clicks = 0;
+  target.addEventListener('click', () => { result.textContent = `clicked ${++clicks}`; });
+
+  // The pill swallows anything that reaches it, so a press that lands on it
+  // while it is passing over is visible in the record rather than silent --
+  // which is the whole difficulty with this bug in an application, where the
+  // press quietly went to a "Help" button and nothing said so.
+  let swallowed = 0;
+  pill.addEventListener('click', () => { swallowed++; });
+
+  // Driven from the test rather than from a user gesture, so the sweep starts
+  // at a moment the test chooses. `sweep('over')` sends it across the target;
+  // `sweep('away')` takes it back off. Returns once the transition has been
+  // *started*, which is what the race needs -- not once it has finished.
+  window.sweep = (to, seconds) => {
+    pill.style.setProperty('--sweep', `${seconds ?? 0.6}s`);
+    // Read back a layout value so the class change that follows is a
+    // transition rather than being coalesced into the same style recalculation.
+    void pill.offsetWidth;
+    pill.className = to;
+  };
+
+  // Start the sweep and resolve when the pill's leading edge is `margin` pixels
+  // short of the target's centre -- so the caller acts at a position rather than
+  // at a time. A wall-clock delay cannot do this: the window between "clear" and
+  // "covering" is a few milliseconds wide, and how long the driver takes to get
+  // from the hit test to the press is not something a test can time from
+  // outside.
+  window.sweepUntilNear = (margin, seconds) => new Promise((resolve) => {
+    const box = target.getBoundingClientRect();
+    const centre = box.x + box.width / 2;
+    window.sweep('past', seconds);
+    const look = () => {
+      // The pill covers the centre once its left edge reaches it; this stops
+      // just short, with the crossing still ahead.
+      if (pill.getBoundingClientRect().x - centre <= margin) return resolve();
+      requestAnimationFrame(look);
+    };
+    requestAnimationFrame(look);
+  });
+
+  // The same, for the mover that is out of reach. Nothing here resolves on a
+  // position: the point of it is that no position it reaches matters.
+  const far = document.getElementById('far');
+  window.sweepFar = (seconds) => {
+    far.style.setProperty('--far', `${seconds}s`);
+    void far.offsetWidth;
+    far.className = 'gone';
+  };
+
+  window.state = () => ({
+    clicks,
+    swallowed,
+    result: result.textContent,
+    running: document.getAnimations().map((a) => a.transitionProperty || a.animationName || '?'),
+  });
+</script>

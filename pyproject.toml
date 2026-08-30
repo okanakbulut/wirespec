@@ -1,0 +1,52 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "wirespec"
+version = "0.0.0"
+description = "A browser driver for Python end-to-end tests: CDP over a pipe, no Node, no bundled browser"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.14"
+dependencies = [
+    "msgspec>=0.21.1",
+]
+
+[project.urls]
+Repository = "https://github.com/okanakbulut/wirespec"
+Issues = "https://github.com/okanakbulut/wirespec/issues"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.0",
+    "pyright>=1.1.409",
+    "pytest>=9.0.3",
+    "pytest-asyncio>=1.3.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.11",
+    "uvloop>=0.22.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["wirespec", "tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+pythonpath = ["."]
+addopts = ["--import-mode=importlib"]
+
+[tool.pyright]
+# `differential/` is written against Playwright, which is deliberately **not**
+# installed here -- that is the whole point of it. It is type-checked by the
+# reference interpreter, where the import resolves.
+ignore = ["differential", ".venv-playwright"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+extend-select = ["TID251"]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"__future__.annotations" = { msg = "Project targets Python >=3.14; this import breaks runtime annotation inspection in msgspec." }

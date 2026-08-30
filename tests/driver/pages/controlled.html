@@ -1,0 +1,55 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>picker inputs a framework owns</title>
+<style>input { display: block; margin: 4px; }</style>
+
+<input id="plain" type="date">
+<input id="assigned" type="date">
+<input id="rebuilt" type="date">
+<input id="stale" type="date">
+<input id="rebuilt-time" type="time">
+<input id="rebuilt-week" type="week">
+
+<script>
+  // Two shapes of controlled field, because only one of them is a trap
+  // (§8.24).
+  //
+  // `assigned` is the gentle one: every change goes out and comes straight back
+  // as an assignment to .value, which is what React does when its state already
+  // matches. Measured: it does not disturb a picker being typed into at all.
+  document.getElementById('assigned').addEventListener('input', (e) => {
+    e.target.value = e.target.value;
+  });
+
+  // `rebuilt` is the one that bites: the change goes out, the framework
+  // reconciles, and the field that comes back is a *different element* carrying
+  // the same value. Whatever the widget knew about where the cursor was and
+  // which digits were half typed goes with the old node. Delegated to the
+  // document so one listener survives every swap.
+  const rebuilds = (id) => {
+    document.addEventListener('input', (e) => {
+      if (e.target.id !== id) return;
+      const old = e.target, value = old.value;
+      const fresh = old.cloneNode(true);
+      fresh.value = value;
+      old.replaceWith(fresh);
+      fresh.focus();
+    });
+  };
+  // The third shape, and the one the pilot application's builder turned out to be: the change
+  // goes out to state that has not caught up, so the render that comes straight
+  // back assigns the *older* value over the top of what was just typed -- which
+  // for a picker empties every segment -- and the render after that puts the
+  // real one in. A fill has to survive both.
+  let held = '';
+  document.getElementById('stale').addEventListener('input', (e) => {
+    const typed = e.target.value;
+    e.target.value = held;
+    held = typed;
+    queueMicrotask(() => { e.target.value = held; });
+  });
+
+  rebuilds('rebuilt');
+  rebuilds('rebuilt-time');
+  rebuilds('rebuilt-week');
+</script>

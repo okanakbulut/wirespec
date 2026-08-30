@@ -1,0 +1,26 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Coverage
+.coverage
+htmlcov/
+
+# Node (website/)
+node_modules/
+.astro/
+website/.astro/
+website/.vscode/
+
+# Editor / tooling
+.claude/
+**/__pycache__/
+.differential/
+.venv-playwright/

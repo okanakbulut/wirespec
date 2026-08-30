@@ -1,0 +1,32 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>dialogs</title>
+<h1>dialogs</h1>
+<button id="alert">alert</button>
+<button id="confirm">confirm</button>
+<button id="prompt">prompt</button>
+<button id="later">later</button>
+<p id="answer">nothing yet</p>
+<script>
+  // Every one of these blocks the renderer until the dialog is handled, which
+  // is the point: the `click` that opens one does not return until something
+  // answers it (§8.20).
+  const answer = document.getElementById("answer");
+  document.getElementById("alert").addEventListener("click", () => {
+    alert("look at me");
+    answer.textContent = "alert dismissed";
+  });
+  document.getElementById("confirm").addEventListener("click", () => {
+    answer.textContent = confirm("really?") ? "confirmed" : "cancelled";
+  });
+  document.getElementById("prompt").addEventListener("click", () => {
+    answer.textContent = prompt("your name?", "default name") ?? "cancelled";
+  });
+  // The other shape: nothing is in flight when this one opens, so the driver
+  // cannot be relying on the command that caused it to notice.
+  document.getElementById("later").addEventListener("click", () => {
+    setTimeout(() => {
+      answer.textContent = confirm("late one") ? "late confirmed" : "late cancelled";
+    }, 50);
+  });
+</script>

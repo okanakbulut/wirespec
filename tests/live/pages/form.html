@@ -1,0 +1,32 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>form</title>
+<style>
+  body { margin: 0; font: 16px system-ui, sans-serif; }
+  #box { position: absolute; left: 40px; top: 60px; width: 200px; height: 50px;
+         padding: 10px; border: 5px solid #1d4ed8; margin: 8px; background: #eff6ff; }
+  #spacer { height: 1500px; }
+  #below { display: block; width: 180px; }
+</style>
+<div id="box">a box with known geometry</div>
+<div id="spacer"></div>
+<input id="below" placeholder="far below the fold">
+<script>
+  // Records what actually reached the element, so a test can tell a focus that
+  // worked from one that merely returned without error.
+  window.__focused = [];
+  document.getElementById("below").addEventListener("focus", () => {
+    window.__focused.push("below");
+  });
+</script>
+
+<input id="upload" type="file">
+<input id="uploads" type="file" multiple>
+<script>
+  window.__files = [];
+  for (const id of ['upload', 'uploads']) {
+    document.getElementById(id).addEventListener('change', (e) => {
+      window.__files.push([id, [...e.target.files].map(f => [f.name, f.size, f.type])]);
+    });
+  }
+</script>

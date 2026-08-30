@@ -1,0 +1,20 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>frames</title>
+<h1>host document</h1>
+<!-- Each iframe is its own execution context, which is what makes this page
+     the one that exercises executionContextCreated and executionContextDestroyed. -->
+<iframe id="widget" src="/index.html" width="300" height="120"></iframe>
+<button id="drop">remove the frame</button>
+<button id="add">add a frame</button>
+<script>
+  document.getElementById("drop").addEventListener("click", () => {
+    document.getElementById("widget").remove();
+  });
+  document.getElementById("add").addEventListener("click", () => {
+    const frame = document.createElement("iframe");
+    frame.id = "late";
+    frame.src = "/index.html";
+    document.body.appendChild(frame);
+  });
+</script>

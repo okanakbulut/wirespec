@@ -1,0 +1,10 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>wirespec driver fixture</title>
+<h1 id="heading">index</h1>
+<p id="where">the page the driver tests navigate to first</p>
+<script>
+  // Set from the load handler, so a goto that did not wait for load sees
+  // undefined rather than true (§6.2).
+  window.addEventListener('load', () => { window.__loaded = document.readyState; });
+</script>

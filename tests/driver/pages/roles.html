@@ -1,0 +1,68 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>every element that can carry a supported role</title>
+<style>[hidden]{display:none}</style>
+
+<h1>Headings</h1><h2>two</h2><h3>three</h3><h4>four</h4><h5>five</h5><h6>six</h6>
+<div role="heading" aria-level="2">by attribute</div>
+
+<button>A button</button>
+<input type="button" value="An input button">
+<input type="submit" value="Submit">
+<input type="reset" value="Reset">
+<input type="image" alt="An image button" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=">
+<details><summary>A summary</summary>details body</details>
+<div role="button" tabindex="0">A div claiming button</div>
+<a href="#" role="button">A link claiming button</a>
+
+<input type="checkbox" id="c1"><label for="c1">A checkbox</label>
+<div role="checkbox" aria-checked="false">A div claiming checkbox</div>
+
+<input type="radio" name="r" id="r1"><label for="r1">First radio</label>
+<input type="radio" name="r" id="r2"><label for="r2">Second radio</label>
+<div role="radio" aria-checked="false">A div claiming radio</div>
+<div role="radiogroup" aria-label="A radiogroup"><span role="radio" aria-checked="true">inside</span></div>
+
+<input type="text" aria-label="A text input">
+<input aria-label="An input with no type">
+<input type="email" aria-label="An email input">
+<input type="tel" aria-label="A tel input">
+<input type="url" aria-label="A url input">
+<textarea aria-label="A textarea"></textarea>
+<div contenteditable="true" role="textbox" aria-label="An editable div">editable</div>
+<input type="search" aria-label="A search input">
+
+<select aria-label="A select"><option>Alpha</option><option>Beta</option></select>
+<input list="suggestions" aria-label="An input with a datalist">
+<datalist id="suggestions"><option value="one"></option></datalist>
+<div role="combobox" aria-expanded="false" aria-label="A div claiming combobox">combo</div>
+
+<ul><li>list item one</li><li>list item two</li></ul>
+<ol><li>ordered item</li></ol>
+<menu><li>menu item</li></menu>
+<div role="list"><div role="listitem">by attribute</div></div>
+
+<a href="/somewhere">A real link</a>
+<a>An anchor with no href</a>
+<map name="m"><area href="/area" alt="An area link" shape="rect" coords="0,0,1,1"></map>
+<span role="link" tabindex="0">A span claiming link</span>
+
+<main>The main region</main>
+<aside aria-label="A complementary aside">aside</aside>
+<section aria-label="A named region">a named section</section>
+<section>an unnamed section</section>
+<div role="region" aria-label="A div claiming region">region</div>
+
+<fieldset><legend>A fieldset group</legend><input aria-label="in a fieldset"></fieldset>
+<address>An address</address>
+<optgroup label="ignored outside a select"></optgroup>
+<div role="group" aria-label="A div claiming group">group</div>
+
+<dialog open aria-label="An open dialog">dialog body</dialog>
+<div role="alertdialog" aria-label="An alertdialog">alert</div>
+
+<output aria-label="An output">42</output>
+<div role="status">A status</div>
+
+<div role="tab" aria-selected="false">A tab</div>
+<div role="tooltip">A tooltip</div>

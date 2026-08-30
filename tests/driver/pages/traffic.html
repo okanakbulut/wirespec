@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>traffic</title>
+<!-- A page that makes exactly the four kinds of request the detail pane has to
+     tell apart: a document (this file), a JSON body worth reading, a POST with
+     a payload, and a binary whose body is deliberately never fetched. -->
+<body style="font: 14px sans-serif; padding: 20px">
+<h1>traffic</h1>
+<button id="go">go</button>
+<div id="out"></div>
+<img id="dot" alt="">
+<script>
+  document.getElementById('go').addEventListener('click', async () => {
+    // Bodies are read here, so Chrome finishes the loads and the recorder gets
+    // its `loadingFinished` -- a fetch nobody drains never completes, which the
+    // pane reports rather than calling an empty body.
+    const got = await fetch('/api', {headers: {'Authorization': 'Bearer squirrel'}});
+    document.getElementById('out').textContent = await got.text();
+    const posted = await fetch('/api', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({who: 'me'}),
+    });
+    await posted.text();
+    document.getElementById('dot').src = '/dot.png';
+  });
+</script>

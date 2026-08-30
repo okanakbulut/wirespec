@@ -1,0 +1,44 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>readers</title>
+<style>
+  #hidden-by-visibility { visibility: hidden; }
+  #hidden-by-display { display: none; }
+  #transparent { opacity: 0; }
+  #below { position: absolute; top: 3000px; }
+  #padded { padding: 20px; border: 5px solid black; width: 100px; height: 40px;
+            position: absolute; left: 50px; top: 60px; margin: 8px; }
+</style>
+
+<div id="lines">one<br>two</div>
+<div id="blocks"><div>alpha</div><div>beta</div></div>
+<div id="hidden-by-visibility">not on the screen</div>
+<div id="hidden-by-display">not laid out</div>
+<div id="transparent">faded but present</div>
+<div id="below">below the fold</div>
+<div id="padded">padded</div>
+
+<input id="value" value="in the field">
+<input id="date" type="date" value="2026-03-15">
+<input id="checked" type="checkbox" checked>
+<input id="unchecked" type="checkbox">
+<input id="disabled" disabled value="off">
+<input id="readonly" readonly value="fixed">
+
+<ul id="rows">
+  <li data-kind="a">Row one</li>
+  <li data-kind="b">Row two</li>
+  <li data-kind="c">Row three</li>
+</ul>
+
+<div id="appears"></div>
+<script>
+  setTimeout(() => {
+    const el = document.createElement('p');
+    el.id = 'late';
+    el.textContent = 'arrived late';
+    document.getElementById('appears').appendChild(el);
+  }, 300);
+</script>
+<style>#generated::before { content: "GENERATED "; }</style>
+<div id="generated">real text</div>

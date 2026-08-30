@@ -1,0 +1,43 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>assertions</title>
+<style>
+  #invisible { visibility: hidden; }
+  #removed { display: none; }
+  .swatch { color: rgb(20, 40, 60); }
+</style>
+
+<ul id="rows">
+  <li>Acme</li>
+  <li>Beta</li>
+  <li>Gamma</li>
+</ul>
+
+<p id="one">the only one</p>
+<p id="invisible">not on the screen</p>
+<p id="removed">not laid out</p>
+<p id="empty"></p>
+<p id="swatch" class="swatch">coloured</p>
+
+<input id="value" value="in the field">
+<input id="blank" value="">
+<input id="checked" type="checkbox" checked>
+<input id="unchecked" type="checkbox">
+<input id="disabled" disabled>
+<input id="readonly" readonly value="fixed">
+<input id="focusable" data-role="target">
+<a id="link" href="/somewhere" data-kind="nav" data-testid="the-link">A link</a>
+
+<div id="late"></div>
+<script>
+  window.__later = (ms, fn) => setTimeout(fn, ms);
+  window.__grow = (ms) => window.__later(ms, () => {
+    const el = document.createElement('span');
+    el.className = 'grown';
+    el.textContent = 'grown';
+    document.getElementById('late').appendChild(el);
+  });
+  window.__shrink = (ms) => window.__later(ms, () => {
+    document.querySelectorAll('#rows li').forEach((el, i) => { if (i) el.remove(); });
+  });
+</script>

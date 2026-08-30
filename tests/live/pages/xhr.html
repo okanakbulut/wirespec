@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>xhr</title>
+<h1>xhr</h1>
+<p id="result">nothing yet</p>
+<script>
+  // Returns the body so a test can assert on what the page actually received,
+  // rather than only on what the network events said was sent.
+  window.__get = async (url, options) => {
+    const response = await fetch(url, options);
+    const text = await response.text();
+    document.getElementById("result").textContent = text;
+    return { status: response.status, body: text };
+  };
+
+  // Deliberately swallows the failure: a request that dies still produces
+  // Network.loadingFailed, and that is the only way the driver hears about it.
+  window.__try = async (url) => {
+    try {
+      const response = await fetch(url);
+      return { ok: true, status: response.status, body: await response.text() };
+    } catch (error) {
+      return { ok: false, error: String(error) };
+    }
+  };
+</script>

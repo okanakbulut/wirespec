@@ -1,0 +1,37 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>interactions</title>
+<style>
+  body { margin: 0; font: 16px system-ui, sans-serif; }
+  #button { position: absolute; left: 20px; top: 30px; width: 140px; height: 44px; }
+  #field  { position: absolute; left: 20px; top: 100px; width: 240px; }
+  #scroller { position: absolute; left: 20px; top: 160px; width: 240px; height: 120px;
+              overflow-y: scroll; border: 1px solid #999; }
+  #tall { height: 900px; }
+</style>
+<button id="button">Press me</button>
+<input id="field" placeholder="type here">
+<div id="scroller"><div id="tall">scrollable</div></div>
+<script>
+  // Every handler records rather than reacts, so a test can prove what the
+  // browser delivered instead of inferring it from a visual side effect.
+  window.__clicks = [];
+  window.__keys = [];
+  window.__modifiers = [];
+
+  document.getElementById("button").addEventListener("click", (event) => {
+    window.__clicks.push({ button: event.button, detail: event.detail, x: event.clientX, y: event.clientY });
+  });
+  document.getElementById("button").addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+    window.__clicks.push({ button: event.button, detail: event.detail, context: true });
+  });
+
+  const field = document.getElementById("field");
+  field.addEventListener("keydown", (event) => {
+    window.__keys.push(event.key);
+    window.__modifiers.push({
+      key: event.key, shift: event.shiftKey, ctrl: event.ctrlKey, alt: event.altKey, meta: event.metaKey,
+    });
+  });
+</script>

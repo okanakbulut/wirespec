@@ -1,0 +1,25 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>forms and refinements</title>
+
+<label for="email">Email address</label>
+<input id="email" type="email" placeholder="you@example.test">
+
+<label>Postcode <input id="postcode" placeholder="SW1A 1AA"></label>
+
+<input id="aria" aria-label="Telephone" placeholder="+44">
+
+<p id="labelled-by">Date of birth</p>
+<input id="dob" aria-labelledby="labelled-by">
+
+<button id="save">Email address</button>
+
+<input id="untitled" placeholder="no label at all">
+
+<ul id="rows">
+  <li data-testid="row-1">Acme <span>active</span></li>
+  <li data-testid="row-12">Acme Holdings <span>dormant</span></li>
+  <li data-testid="row-3">Beta <span>active</span></li>
+</ul>
+
+<div id="either-a">the first outcome</div>

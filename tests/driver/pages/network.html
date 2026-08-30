@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>network</title>
+<button id="go">fetch</button>
+<div id="out"></div>
+<img id="pic" alt="a picture">
+<script>
+  window.__results = [];
+  window.__fetch = async (url, options) => {
+    const response = await fetch(url, options);
+    const text = await response.text();
+    window.__results.push([response.status, text]);
+    document.getElementById('out').textContent = text;
+    return text;
+  };
+  document.getElementById('go').addEventListener('click', () => window.__fetch('/api'));
+  window.__loadImage = (url) => { document.getElementById('pic').src = url; };
+</script>

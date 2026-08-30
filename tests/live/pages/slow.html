@@ -1,0 +1,9 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>slow page</title>
+<h1>slow page</h1>
+<!-- The stylesheet is a render-blocking sub-resource served by /slow, so the
+     document stays in "loading" for as long as the server stalls. That is the
+     window Page.stopLoading has to land in. -->
+<link rel="stylesheet" href="/slow?ms=10000">
+<p>this document does not finish loading until the server answers</p>

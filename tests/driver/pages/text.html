@@ -1,0 +1,53 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>rendered text</title>
+<style>
+  #transform { text-transform: uppercase; }
+  #invisible { visibility: hidden; }
+  #gone { display: none; }
+  #inline-block span { display: inline-block; }
+  .hidden-child { visibility: hidden; }
+</style>
+
+<div id="breaks">one<br>two</div>
+
+<div id="blocks"><div>alpha</div><div>beta</div></div>
+
+<div id="collapse">   lots     of
+   space   </div>
+
+<div id="transform">shouty</div>
+
+<div id="visibility">before <span class="hidden-child">gone</span> after</div>
+
+<div id="display">before <span id="gone">gone</span> after</div>
+
+<div id="invisible">whole thing hidden</div>
+
+<div id="scripts">visible<script>var x = "in a script";</script><style>.q{color:red}</style></div>
+
+<div id="nested"><span>VO-2026-00001</span> &middot; sandbox tenant</div>
+
+<div id="inline-block"><span>a</span><span>b</span></div>
+
+<!-- The whitespace between the first two is a text node of its own, and a
+     whitespace-only one. `DOM.describeNode` does not report those at all, so a
+     textContent rebuilt from the DOM tree reads "ab" (§8.21). The
+     &nbsp; is there because U+00A0 is not ASCII whitespace and survives the
+     prune, which is what makes the two cases distinguishable. -->
+<div id="spaced"><b>a</b> <b>b</b>&nbsp;<b>c</b></div>
+
+<div id="pre"><pre>  kept
+  exactly  </pre></div>
+
+<div id="entities">a &amp; b &nbsp; c</div>
+
+<div id="empty"></div>
+
+<div id="whitespace-only">   </div>
+
+<div id="trailing">text with trailing space   </div>
+
+<div id="input-value"><input type="text" value="in a value"><textarea>in a textarea</textarea></div>
+
+<div id="button-value"><input type="submit" value="Submit me"><button>A button</button></div>

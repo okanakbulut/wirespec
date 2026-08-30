@@ -1,0 +1,16 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>tall</title>
+<style>
+  body { margin: 0; font: 16px/1.4 system-ui, sans-serif; }
+  .band { height: 400px; display: grid; place-items: center; font-size: 32px; }
+  .band:nth-child(odd) { background: #1d4ed8; color: white; }
+  .band:nth-child(even) { background: #f59e0b; color: black; }
+  #target { height: 60px; background: #10b981; display: grid; place-items: center; }
+</style>
+<div class="band">one</div>
+<div class="band">two</div>
+<div class="band">three</div>
+<div id="target">scroll target</div>
+<div class="band">four</div>
+<script>window.__page = "tall";</script>

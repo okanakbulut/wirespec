@@ -1,0 +1,46 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>markup</title>
+
+<!--
+  The cases where reading textContent back out of `DOM.getOuterHTML` could
+  disagree with reading it out of a `DOMSnapshot`. Every one of these broke a
+  draft of `wirespec/markup.py` or was expected to and did not.
+-->
+
+<div id="whitespace"><b>a</b> <b>b</b></div>
+<div id="only-whitespace"><span> </span><span>&#9;</span></div>
+<div id="entities">a &amp; b &lt;c&gt; &nbsp;d &#8212; e</div>
+<div id="comment">before<!-- not text -->after</div>
+
+<div id="script">visible<script>var hidden = "in a script";</script>tail</div>
+<div id="style">visible<style>#nothing { content: "in a style"; }</style>tail</div>
+<div id="noscript">visible<noscript>in a noscript</noscript>tail</div>
+<div id="template">visible<template><p>in a template</p></template>tail</div>
+<div id="nested-skip">visible<template><style>in both</style>in the template</template>tail</div>
+
+<div id="void">a<br>b<img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" alt="alt text">c<hr>d</div>
+<div id="input-value">before<input value="an attribute, not text">after</div>
+
+<div id="svg">
+  before
+  <svg width="20" height="20" viewBox="0 0 20 20" role="img">
+    <title>an svg title</title>
+    <desc>an svg desc</desc>
+    <circle cx="10" cy="10" r="8" fill="currentColor"/>
+  </svg>
+  after
+</div>
+
+<div id="deep"><div><div><div><span>deeply </span><span>nested </span><span>text</span></div></div></div></div>
+<div id="quotes">she said "quoted" and 'single' &amp; more</div>
+<div id="preformatted"><pre>  two  spaces
+  and a line
+</pre></div>
+<div id="empty"></div>
+
+<ul id="rows">
+  <li>Row one</li>
+  <li>Row two</li>
+  <li>Row three</li>
+</ul>

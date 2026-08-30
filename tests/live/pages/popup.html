@@ -1,0 +1,13 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>opener</title>
+<h1>opener</h1>
+<button id="open">open a popup</button>
+<script>
+  // window.open makes a target we did not create, which is the case
+  // Target.targetCreated exists for: a driver has to learn about pages the
+  // page itself opens.
+  document.getElementById("open").addEventListener("click", () => {
+    window.__popup = window.open("/index.html", "popup", "width=320,height=240");
+  });
+</script>
