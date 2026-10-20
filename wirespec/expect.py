@@ -413,6 +413,10 @@ class LocatorAssertions(_Assertions):
         """
 
         async def read():
+            # Asked before `one`, which would otherwise wait its whole timeout
+            # for an element to appear and only then report that none did.
+            if self._negated and not await self._locator.page.resolve(self._locator.chain):
+                return "no such element"
             try:
                 return await probe(await self._locator.one(timeout=self._timeout))
             except WirespecTimeoutError as exc:

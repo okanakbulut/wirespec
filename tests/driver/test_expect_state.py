@@ -6,6 +6,7 @@ more than it meant to is a bug that otherwise surfaces much later in a different
 test.
 """
 
+import asyncio
 import re
 
 import pytest
@@ -142,6 +143,20 @@ async def test_not_to_be_visible_holds_for_an_element_that_is_gone(page: Page) -
     with pytest.raises(WirespecTimeoutError) as raised:
         await expect(page.locator("#rows li"), timeout=0.3).not_to_be_visible()
     assert "exactly one" in str(raised.value)
+
+
+async def test_not_to_be_visible_answers_at_once_for_an_element_already_gone(page: Page) -> None:
+    """Zero matches is the answer, not a reason to wait. Asking ``Locator.one``
+    first made every such assertion sit out its whole timeout waiting for an
+    element to appear, and only then accept that it had not -- five seconds a
+    call that passed anyway, and invisible for exactly that reason.
+    """
+    await page.goto("/assertions.html")
+    await page.evaluate("() => document.getElementById('one').remove()")
+    loop = asyncio.get_running_loop()
+    started = loop.time()
+    await expect(page.locator("#one"), timeout=5).not_to_be_visible()
+    assert loop.time() - started < 1
 
 
 async def test_not_to_be_disabled_waits_for_a_control_to_come_back(page: Page) -> None:
