@@ -1,0 +1,10 @@
+<!doctype html>
+<html>
+<body>
+  <!-- Where a full navigation lands: the text appears after a script that
+       blocks the parser, so the document commits well before it is done. -->
+  <div id="result">loading</div>
+  <script src="/slow.js"></script>
+  <script>setTimeout(() => { document.getElementById("result").textContent = "Arrived."; }, 150)</script>
+</body>
+</html>
