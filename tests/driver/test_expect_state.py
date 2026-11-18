@@ -105,6 +105,19 @@ async def test_a_url_assertion_waits_for_a_navigation_the_page_started(page: Pag
     await expect(page).to_have_url("/index.html")
 
 
+async def test_text_shows_up_on_a_document_the_page_navigated_to(page: Page) -> None:
+    """A wait running across a full navigation reads the new document.
+
+    Chrome replaces the document again after the commit `frameNavigated`
+    reports. A root cached in that window named a document that was no longer
+    there, and the wait found nothing on it for its whole timeout -- every
+    time, not sometimes.
+    """
+    await page.goto("/assertions.html")
+    await page.evaluate("() => window.__later(50, () => { location.assign('/arrives.html'); })")
+    await expect(page.get_by_text("Arrived.")).to_be_visible()
+
+
 async def test_a_url_assertion_quotes_where_the_page_actually_is(page: Page) -> None:
     await page.goto("/assertions.html")
     with pytest.raises(WirespecTimeoutError) as raised:

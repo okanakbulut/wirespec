@@ -325,6 +325,11 @@ class Page:
         self._unsubscribe = (
             session.on(page_domain.FrameNavigated, self._frame_navigated),
             session.on(page_domain.NavigatedWithinDocument, self._navigated_within_document),
+            # Chrome replaces the document once more after the commit that
+            # frameNavigated reports, and every node id with it. A root fetched
+            # in between is a document that is no longer there: queries on it
+            # find nothing, without an error to say why.
+            session.signal(("DOM.documentUpdated",), self.invalidate),
             # Not lazy, unlike `Network` and `Fetch`: an unanswered dialog stops
             # the page, so the subscription has to predate the first thing that
             # could open one -- and that is the `goto`, which a top-level
@@ -1116,7 +1121,8 @@ class Page:
         try:
             return await resolve(self, chain)
         except CDPError as exc:
-            if "Could not find node" not in exc.message:
+            # A search session is dropped with the document it searched.
+            if "Could not find node" not in exc.message and "No search session" not in exc.message:
                 raise
             self.invalidate()
             return await resolve(self, chain)

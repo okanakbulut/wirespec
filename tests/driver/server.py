@@ -103,6 +103,12 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Content-Length", "0")
             self.end_headers()
             return
+        if path == "/slow.js":
+            # A parser-blocking script that takes its time: the document it is
+            # in is replaced once more after commit, while it waits.
+            time.sleep(0.2)
+            self.respond(200, "text/javascript", b"")
+            return
         if path == "/teapot":
             self.respond(418, "text/plain", b"short and stout")
             return
